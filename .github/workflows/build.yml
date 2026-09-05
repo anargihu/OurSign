@@ -1,29 +1,39 @@
-name: Create OurSign Project
+name: Build OurSign
 
 on:
   workflow_dispatch:
-
-permissions:
-  contents: write
+  push:
+    branches:
+      - main
 
 jobs:
-  create:
+  build:
     runs-on: macos-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate Xcode project
-        run: xcodegen generate
-
-      - name: Commit project
+      - name: Build OurSign
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add OurSign.xcodeproj
-          git commit -m "Create OurSign Xcode project" || true
-          git push
+          xcodebuild \
+            -project OurSign.xcodeproj \
+            -scheme OurSign \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Package IPA
+        run: |
+          rm -rf Payload OurSign-0.0.1.ipa
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/OurSign.app Payload/OurSign.app
+          zip -r OurSign-0.0.1.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: OurSign-0.0.1
+          path: OurSign-0.0.1.ipa
