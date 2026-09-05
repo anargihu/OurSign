@@ -16,13 +16,15 @@ struct ContentView: View {
                     AppsView()
                 case 2:
                     SourcesView()
-                default:
+                case 3:
                     SettingsView()
+                default:
+                    BrowseView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            CodePenGlassBar {
+            GlassEffectContainer(spacing: 8) {
                 HStack(spacing: 8) {
                     ForEach(0..<4, id: \.self) { index in
                         Button {
@@ -30,59 +32,44 @@ struct ContentView: View {
                                 selectedTab = index
                             }
                         } label: {
-                            VStack(spacing: 4) {
+                            VStack(spacing: 3) {
                                 Text(icons[index])
-                                    .font(.system(size: 25, weight: .medium))
-                                    .frame(height: 29)
+                                    .font(.system(size: 26, weight: .medium))
+                                    .frame(height: 30)
 
                                 Text(titles[index])
-                                    .font(.system(size: 11, weight: .medium))
+                                    .font(.system(size: 11, weight: .semibold))
                             }
-                            .foregroundStyle(selectedTab == index ? .white : .white.opacity(0.62))
                             .frame(maxWidth: .infinity)
                             .frame(height: 64)
+                            .foregroundStyle(
+                                selectedTab == index
+                                ? Color.white
+                                : Color.white.opacity(0.65)
+                            )
                         }
                         .buttonStyle(.plain)
+                        .glassEffect(
+                            selectedTab == index
+                            ? .regular.tint(.cyan).interactive()
+                            : .regular.interactive(),
+                            in: RoundedRectangle(cornerRadius: 21, style: .continuous)
+                        )
                     }
                 }
-                .padding(8)
+                .padding(9)
+                .background {
+                    RoundedRectangle(cornerRadius: 31, style: .continuous)
+                        .fill(.black.opacity(0.18))
+                }
+                .glassEffect(
+                    .regular.interactive(),
+                    in: RoundedRectangle(cornerRadius: 31, style: .continuous)
+                )
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 14)
             .padding(.bottom, 10)
         }
         .preferredColorScheme(.dark)
-    }
-}
-
-struct CodePenGlassBar<Content: View>: View {
-    @ViewBuilder let content: () -> Content
-
-    var body: some View {
-        content()
-            .background {
-                RoundedRectangle(cornerRadius: 30, style: .continuous)
-                    .fill(.white.opacity(0.10))
-                    .background {
-                        RoundedRectangle(cornerRadius: 30, style: .continuous)
-                            .fill(.ultraThinMaterial)
-                    }
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 30, style: .continuous)
-                            .stroke(
-                                LinearGradient(
-                                    colors: [
-                                        .white.opacity(0.42),
-                                        .white.opacity(0.08),
-                                        .cyan.opacity(0.18)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1
-                            )
-                    }
-                    .shadow(color: .black.opacity(0.35), radius: 24, y: 10)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
     }
 }
