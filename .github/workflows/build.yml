@@ -20,8 +20,13 @@ targets:
       - AppItem.swift
       - AppCard.swift
       - LiquidGlass.metal
+    info:
+      path: OurSign/Info.plist
+      properties:
+        CFBundleDisplayName: OurSign
+        CFBundleIdentifier: com.anar.oursign
+        CFBundleShortVersionString: "0.0.1"
+        CFBundleVersion: "1"
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.anar.oursign
       SWIFT_VERSION: "5.0"
-      GENERATE_INFOPLIST_FILE: true
-      INFOPLIST_KEY_CFBundleDisplayName: OurSign
