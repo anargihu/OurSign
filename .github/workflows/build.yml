@@ -14,28 +14,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show Xcode version
-        run: xcodebuild -version
+      - name: Show project files
+        run: |
+          echo "Files:"
+          find . -maxdepth 3 -type f | sort
+          echo "Xcode projects:"
+          find . -name "*.xcodeproj" -o -name "*.xcworkspace"
+
+      - name: Show available schemes
+        run: |
+          PROJECT=$(find . -name "*.xcodeproj" -print -quit)
+
+          if [ -z "$PROJECT" ]; then
+            echo "No .xcodeproj found"
+            exit 1
+          fi
+
+          echo "Using project: $PROJECT"
+          xcodebuild -list -project "$PROJECT"
 
       - name: Build OurSign
         run: |
+          PROJECT=$(find . -name "*.xcodeproj" -print -quit)
+
           xcodebuild \
-            -project OurSign.xcodeproj \
+            -project "$PROJECT" \
             -scheme OurSign \
             -sdk iphoneos \
             -configuration Release \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
-
-      - name: Package OurSign
-        run: |
-          mkdir -p Payload
-          cp -R build/Build/Products/Release-iphoneos/OurSign.app Payload/
-          zip -r OurSign-0.0.1.ipa Payload
-
-      - name: Upload OurSign
-        uses: actions/upload-artifact@v4
-        with:
-          name: OurSign-0.0.1
-          path: OurSign-0.0.1.ipa
