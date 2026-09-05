@@ -10,7 +10,7 @@ struct ContentView: View {
 
             AppsView()
                 .tabItem {
-                    Label("My Apps", systemImage: "apps.iphone")
+                    Label("My Apps", systemImage: "rectangle.stack.fill")
                 }
 
             SourcesView()
@@ -20,9 +20,35 @@ struct ContentView: View {
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
+                    Label("Settings", systemImage: "slider.horizontal.3")
                 }
         }
         .tint(.cyan)
+        .toolbarBackground(.ultraThinMaterial, for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
+    }
+}
+struct OurSignIcon: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(
+                    LinearGradient(
+                        colors: [.cyan, .blue, .purple],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 2
+                )
+                .frame(width: 22, height: 22)
+
+            Circle()
+                .stroke(.white, lineWidth: 2)
+                .frame(width: 8, height: 8)
+
+            Circle()
+                .fill(.white)
+                .frame(width: 3, height: 3)
+        }
     }
 }
