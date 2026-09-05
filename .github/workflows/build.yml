@@ -1,47 +1,24 @@
-name: Build OurSign
+name: Create OurSign Project
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
-  build:
+  create:
     runs-on: macos-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show project files
-        run: |
-          echo "Files:"
-          find . -maxdepth 3 -type f | sort
-          echo "Xcode projects:"
-          find . -name "*.xcodeproj" -o -name "*.xcworkspace"
+      - name: Install XcodeGen
+        run: brew install xcodegen
 
-      - name: Show available schemes
-        run: |
-          PROJECT=$(find . -name "*.xcodeproj" -print -quit)
+      - name: Generate Xcode project
+        run: xcodegen generate
 
-          if [ -z "$PROJECT" ]; then
-            echo "No .xcodeproj found"
-            exit 1
-          fi
-
-          echo "Using project: $PROJECT"
-          xcodebuild -list -project "$PROJECT"
-
-      - name: Build OurSign
-        run: |
-          PROJECT=$(find . -name "*.xcodeproj" -print -quit)
-
-          xcodebuild \
-            -project "$PROJECT" \
-            -scheme OurSign \
-            -sdk iphoneos \
-            -configuration Release \
-            -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
+      - name: Upload Xcode project
+        uses: actions/upload-artifact@v4
+        with:
+          name: OurSign-XcodeProject
+          path: OurSign.xcodeproj
