@@ -1,0 +1,20 @@
+name: OurSign
+
+options:
+  bundleIdPrefix: com.anar
+
+targets:
+  OurSign:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: .
+        excludes:
+          - .github
+          - project.yml
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.anar.oursign
+      SWIFT_VERSION: "5.0"
+      INFOPLIST_KEY_CFBundleDisplayName: OurSign
+      INFOPLIST_KEY_UIApplicationSceneManifest_Generation: true
