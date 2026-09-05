@@ -1,45 +1,29 @@
-name: Build OurSign
+name: OurSign
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+options:
+  bundleIdPrefix: com.anar
+  deploymentTarget:
+    iOS: "26.0"
 
-jobs:
-  build:
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate Xcode Project
-        run: xcodegen generate
-
-      - name: Build OurSign
-        run: |
-          xcodebuild \
-            -project OurSign.xcodeproj \
-            -scheme OurSign \
-            -sdk iphoneos \
-            -configuration Release \
-            -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
-
-      - name: Package IPA
-        run: |
-          rm -rf Payload OurSign-0.0.1.ipa
-          mkdir Payload
-          cp -R build/Build/Products/Release-iphoneos/OurSign.app Payload/OurSign.app
-          zip -r OurSign-0.0.1.ipa Payload
-
-      - name: Upload IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: OurSign-0.0.1
-          path: OurSign-0.0.1.ipa
+targets:
+  OurSign:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - OurSignApp.swift
+      - ContentView.swift
+      - BrowseView.swift
+      - AppsView.swift
+      - SourcesView.swift
+      - SettingsView.swift
+      - AppItem.swift
+      - AppCard.swift
+      - LiquidGlass.metal
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.anar.oursign
+      SWIFT_VERSION: "5.0"
+      GENERATE_INFOPLIST_FILE: true
+      INFOPLIST_KEY_CFBundleDisplayName: OurSign
+      CURRENT_PROJECT_VERSION: "1"
+      MARKETING_VERSION: "0.0.1"
