@@ -3,6 +3,9 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTab = 0
 
+    private let titles = ["Browse", "My Apps", "Sources", "Settings"]
+    private let icons = ["⌂", "□", "⚿", "⚙︎"]
+
     var body: some View {
         ZStack(alignment: .bottom) {
             Group {
@@ -19,120 +22,67 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            OurSignTabBar(selectedTab: $selectedTab)
-                .padding(.horizontal, 18)
-                .padding(.bottom, 10)
-        }
-        .ignoresSafeArea(.keyboard)
-    }
-}
+            CodePenGlassBar {
+                HStack(spacing: 8) {
+                    ForEach(0..<4, id: \.self) { index in
+                        Button {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                selectedTab = index
+                            }
+                        } label: {
+                            VStack(spacing: 4) {
+                                Text(icons[index])
+                                    .font(.system(size: 25, weight: .medium))
+                                    .frame(height: 29)
 
-struct OurSignTabBar: View {
-    @Binding var selectedTab: Int
-
-    private let tabs = [
-        ("Browse", "square.grid.2x2.fill"),
-        ("My Apps", "rectangle.stack.fill"),
-        ("Sources", "square.stack.3d.up.fill")
-    ]
-
-    var body: some View {
-        HStack(spacing: 8) {
-            ForEach(0..<tabs.count, id: \.self) { index in
-                tabButton(
-                    title: tabs[index].0,
-                    icon: tabs[index].1,
-                    index: index
-                )
-            }
-
-            Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
-                    selectedTab = 3
-                }
-            } label: {
-                VStack(spacing: 5) {
-                    OurSignSettingsIcon(active: selectedTab == 3)
-                        .frame(width: 27, height: 27)
-
-                    Text("Settings")
-                        .font(.system(size: 11, weight: .medium))
-                }
-                .foregroundStyle(selectedTab == 3 ? .white : .secondary)
-                .frame(maxWidth: .infinity)
-                .frame(height: 62)
-                .background {
-                    if selectedTab == 3 {
-                        RoundedRectangle(cornerRadius: 18)
-                            .fill(.white.opacity(0.1))
+                                Text(titles[index])
+                                    .font(.system(size: 11, weight: .medium))
+                            }
+                            .foregroundStyle(selectedTab == index ? .white : .white.opacity(0.62))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 64)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
+                .padding(8)
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Settings")
+            .padding(.horizontal, 16)
+            .padding(.bottom, 10)
         }
-        .padding(8)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 27))
-        .overlay {
-            RoundedRectangle(cornerRadius: 27)
-                .stroke(.white.opacity(0.12), lineWidth: 1)
-        }
-        .shadow(color: .black.opacity(0.35), radius: 25, y: 10)
-    }
-
-    private func tabButton(title: String, icon: String, index: Int) -> some View {
-        Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
-                selectedTab = index
-            }
-        } label: {
-            VStack(spacing: 5) {
-                Image(systemName: icon)
-                    .font(.system(size: 21, weight: .semibold))
-                    .frame(height: 27)
-
-                Text(title)
-                    .font(.system(size: 11, weight: .medium))
-            }
-            .foregroundStyle(selectedTab == index ? .white : .secondary)
-            .frame(maxWidth: .infinity)
-            .frame(height: 62)
-            .background {
-                if selectedTab == index {
-                    RoundedRectangle(cornerRadius: 18)
-                        .fill(.white.opacity(0.1))
-                }
-            }
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(title)
+        .preferredColorScheme(.dark)
     }
 }
 
-struct OurSignSettingsIcon: View {
-    let active: Bool
+struct CodePenGlassBar<Content: View>: View {
+    @ViewBuilder let content: () -> Content
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(
-                    LinearGradient(
-                        colors: [.cyan, .blue, .purple],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 2.2
-                )
-                .frame(width: 23, height: 23)
-
-            Circle()
-                .stroke(active ? .white : .secondary, lineWidth: 2)
-                .frame(width: 9, height: 9)
-
-            Circle()
-                .fill(active ? .white : .secondary)
-                .frame(width: 3.5, height: 3.5)
-        }
+        content()
+            .background {
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                    .fill(.white.opacity(0.10))
+                    .background {
+                        RoundedRectangle(cornerRadius: 30, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                    }
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 30, style: .continuous)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        .white.opacity(0.42),
+                                        .white.opacity(0.08),
+                                        .cyan.opacity(0.18)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                    }
+                    .shadow(color: .black.opacity(0.35), radius: 24, y: 10)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
     }
 }
