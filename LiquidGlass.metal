@@ -15,5 +15,5 @@ half2 liquidGlass(
     float x = sin(p.y * 7.0 + time) * 0.004;
     float y = cos(p.x * 6.0 + time * 0.8) * 0.004;
 
-    return float2(x, y) * strength;
+    return half2(float2(x, y) * strength);
 }
