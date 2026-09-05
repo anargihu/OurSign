@@ -1,0 +1,41 @@
+name: Build OurSign
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build OurSign
+        run: |
+          xcodebuild \
+            -project OurSign.xcodeproj \
+            -scheme OurSign \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Package OurSign
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/OurSign.app Payload/
+          zip -r OurSign-0.0.1.ipa Payload
+
+      - name: Upload OurSign
+        uses: actions/upload-artifact@v4
+        with:
+          name: OurSign-0.0.1
+          path: OurSign-0.0.1.ipa
