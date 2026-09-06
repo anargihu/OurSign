@@ -9,17 +9,21 @@ struct SettingsView: View {
                 Section("WireGuard") {
                     Toggle("WireGuard", isOn: $wireGuardEnabled)
 
+                    NavigationLink {
+                        WireGuardView()
+                    } label: {
+                        HStack {
+                            Text("Tunnel")
+                            Spacer()
+                            Text("OurSign")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
                     HStack {
                         Text("Status")
                         Spacer()
                         Text(wireGuardEnabled ? "Disconnected" : "Disabled")
-                            .foregroundStyle(.secondary)
-                    }
-
-                    HStack {
-                        Text("Tunnel")
-                        Spacer()
-                        Text("OurSign")
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -45,5 +49,33 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
+    }
+}
+
+struct WireGuardView: View {
+    var body: some View {
+        List {
+            Section("Tunnel") {
+                HStack {
+                    Text("Name")
+                    Spacer()
+                    Text("OurSign")
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack {
+                    Text("Status")
+                    Spacer()
+                    Text("Disconnected")
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Section("Configuration") {
+                Text("Interface")
+                Text("Peer")
+            }
+        }
+        .navigationTitle("WireGuard")
     }
 }
