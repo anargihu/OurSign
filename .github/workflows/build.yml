@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
@@ -43,3 +46,13 @@ jobs:
         with:
           name: OurSign-0.0.1
           path: OurSign-0.0.1.ipa
+
+      - name: Publish Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete Test --yes || true
+          git push origin :refs/tags/Test || true
+          gh release create Test OurSign-0.0.1.ipa \
+            --title "OurSign 0.0.1" \
+            --notes "OurSign 0.0.1 test build"
